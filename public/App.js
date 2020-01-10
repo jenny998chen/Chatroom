@@ -16,9 +16,7 @@ const GlobalStyle = styled.createGlobalStyle`
    outline: 0 !important;
   }
   #root{
-    // --grey: grey;
     display: grid;
-    
   }
   button,input{
     font-size: 1em;
