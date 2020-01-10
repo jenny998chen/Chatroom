@@ -88,14 +88,13 @@ const Layout = styled.div`
   grid-template-columns:280px 1fr;
   grid-template-rows:1fr auto;
   overflow: hidden;
-  // width:800px;
-  // max-height:600px;
-  // margin: auto;
+
+  max-width:1100px;
+  border-right:1px solid #C8C8C8;
   // box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  // border-radius: 0.3em;
 `
 const Side = styled.aside`
-  border-right:1px solid grey;
+  border-right:1px solid #C8C8C8;
   grid-row: span 2;
   padding:1em 0;
   div{
@@ -122,10 +121,11 @@ const Name = styled.div`
   }
 `
 const Action = styled.div`
+  font-size: 0.9em;
   font-weight: 500;
   opacity: 0.7;
   text-align: center;
-  padding:0.2em;
+  padding:0.1em;
 `
 const Bubble = styled.div`
   max-width: 85%;
