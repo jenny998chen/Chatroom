@@ -52,23 +52,20 @@ function App() {
   const [err, setErr] = useState(false);
 
   function login(name) {
-    fetch("/login",{
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    method: "POST",
-    body: JSON.stringify({data:name})
-    })
-    .then(res => res.json())
-    .then(res=>{ 
-      if(res.data){
-        setUser(name);
-        socket.emit('add user', name);
-        setShowLogin(false);
-      }else{
-        setErr(true);
-      }
-    })
+    fetch("/login", {
+      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      body: JSON.stringify({ data: name })
+    }).then(res => res.json())
+      .then(res => {
+        if (res.data) {
+          setUser(name);
+          socket.emit('add user', name);
+          setShowLogin(false);
+        } else {
+          setErr(true);
+        }
+      })
   }
   return (
     <Fragment>
@@ -80,7 +77,7 @@ function App() {
           {err && <span>username already exist! try again</span>}
         </Login>
         :
-        <Home user={user}/>
+        <Home user={user} />
       }
     </Fragment>
   );
@@ -88,7 +85,7 @@ function App() {
 const Layout = styled.div`
   height:100%;
   display:grid;
-  grid-template-columns:200px 1fr;
+  grid-template-columns:280px 1fr;
   grid-template-rows:1fr auto;
   overflow: hidden;
   // width:800px;
@@ -145,12 +142,7 @@ const Input = styled.div`
   :focus {
     border-color: rgb(0,132,180);
   }
-  white-space:normal;
-  word-wrap: break-word;
-  // resize: none;
-  // overflow: hidden;
-  // min-height: 50px;
-  //   max-height: 100px;
+  word-break:break-all;
 `;
 const Footer = styled.div`
   display:flex;
@@ -167,7 +159,7 @@ const Button = styled.button`
   padding: 0.5em 1em;
   border:none;
 `;
-function Home({user}) {
+function Home({ user }) {
   let chatRef = useRef(null);
   let inputRef = useRef(null);
   const [users, setUsers] = useState([]);
@@ -178,7 +170,7 @@ function Home({user}) {
       setChats(chats => chats.concat(msg));
     });
     socket.on('prev', m => {
-      console.log('m',m)
+      console.log('m', m)
       setChats(m.chats);
       setUsers(m.users);
     });
@@ -202,7 +194,7 @@ function Home({user}) {
   function sendMsg() {
     socket.emit('chat message', { username: user, msg: inp });
     setChats(chats.concat({ self: true, username: user, msg: inp }));
-    inputRef.current.innerHTML=''
+    inputRef.current.innerHTML = ''
   }
   return (
     <Layout>
@@ -214,16 +206,15 @@ function Home({user}) {
           <Fragment key={i}>
             <Name right={self}>{username}</Name>
             <Bubble right={self}>{msg}</Bubble>
-
           </Fragment>
         ))}
       </Chat>
       <Footer>
-        <Input 
-        ref={inputRef} 
-        contentEditable
+        <Input
+          ref={inputRef}
+          contentEditable
           onInput={e => setInp(e.currentTarget.textContent)}
-          onKeyDown={e => { if (e.key === 'Enter'){sendMsg();e.preventDefault(); }}}
+          onKeyDown={e => { if (e.key === 'Enter') { sendMsg(); e.preventDefault(); } }}
         />
         <Button onClick={sendMsg}>
           send
