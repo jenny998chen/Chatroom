@@ -170,7 +170,8 @@ function Home({ user }) {
   let inputRef = useRef(null);
   const [users, setUsers] = useState([]);
   const [chats, setChats] = useState([]);
-  const [inp, setInp] = useState('');
+  const [typing, setTyping] = useState(false);
+  const [typingUsers, setTtypingUsers] = useState([]);
   useEffect(() => {
     socket.on('chat message', msg => {
       setChats(chats => chats.concat(msg));
@@ -180,15 +181,20 @@ function Home({ user }) {
       setChats(m.chats);
       setUsers(m.users);
     });
+    socket.on('typing', data => {
+      console.log(data);
+      setTtypingUsers(typingUsers => (data.typing && data.username) ?
+        typingUsers.concat(data.username) : typingUsers.filter(i => i !== data.username));
+    });
     socket.on('user joined', data => {
       console.log(data + ' joined');
-      setChats(chats=>chats.concat({ action: 'joined', username: data}));
+      setChats(chats => chats.concat({ action: 'joined', username: data }));
       setUsers(users => users.concat(data));
     });
     socket.on('user left', data => {
       console.log(data + ' left');
-      if(data){
-        setChats(chats=>chats.concat({ action: 'left', username: data}));
+      if (data) {
+        setChats(chats => chats.concat({ action: 'left', username: data }));
         setUsers(users => users.filter(i => i !== data));
       }
     });
@@ -200,10 +206,22 @@ function Home({ user }) {
     }
   }, [chats]);
 
+  useEffect(() => {
+    socket.emit('typing', typing);
+  }, [typing]);
+
   function sendMsg() {
-    socket.emit('chat message', { username: user, msg: inp });
-    setChats(chats.concat({ self: true, username: user, msg: inp }));
-    inputRef.current.innerHTML = ''
+    setTyping(false);
+    let input = inputRef.current;
+    socket.emit('chat message', { username: user, msg: input.textContent });
+    setChats(chats.concat({ self: true, username: user, msg: input.textContent }));
+    input.innerHTML = ''
+  }
+  function handleKeyDown(e) {
+    if (e.key === 'Enter') {
+      sendMsg();
+      e.preventDefault();
+    } else if (!typing) setTyping(true);
   }
   return (
     <Layout>
@@ -213,23 +231,30 @@ function Home({ user }) {
       <Chat ref={chatRef}>
         {chats.map(({ username, self, msg, action }, i) => (
           <Fragment key={i}>
-            {action?
-            <Action>{username} {action}</Action>
-            :
-            <Fragment>
-            <Name right={self}>{username}</Name>
-            <Bubble right={self}>{msg}</Bubble>
-            </Fragment>
+            {action ? <Action>{username} {action}</Action>
+              :
+              <Fragment>
+                <Name right={self}>{username}</Name>
+                <Bubble right={self}>{msg}</Bubble>
+              </Fragment>
             }
           </Fragment>
         ))}
+        {
+          typingUsers.map((u, i) => (
+            <Fragment key={i}>
+              <Name right={false}>{u}</Name>
+              <Bubble right={false}>...</Bubble>
+            </Fragment>
+          ))
+        }
       </Chat>
       <Footer>
         <Input
           ref={inputRef}
           contentEditable
-          onInput={e => setInp(e.currentTarget.textContent)}
-          onKeyDown={e => { if (e.key === 'Enter') { sendMsg(); e.preventDefault(); } }}
+          onKeyDown={handleKeyDown}
+          onBlur={() => setTyping(false)}
         />
         <Button onClick={sendMsg}>
           send

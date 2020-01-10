@@ -34,6 +34,13 @@ io.on('connection', socket => {
     users.push(name);
     socket.broadcast.emit('user joined', name);
   });
+  socket.on('typing', data => {
+    console.log(data)
+    socket.broadcast.emit('typing', {
+      typing: data,
+      username: socket.username
+    });
+  });
   socket.on('disconnect', () => {
     socket.broadcast.emit('user left', socket.username);
     users=users.filter(i => i !== socket.username);
