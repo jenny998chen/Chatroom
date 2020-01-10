@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-var path = require("path");
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3001;
@@ -12,11 +11,8 @@ app.use(express.json())
 //   extended: true
 // }));
 
-
 var users = [];
 var chatMsg=[
-// {username: 'test', msg: 'ttttttttttrehaerhe'},
-// {username: 'test', msg: 'ttttttttttrehaerhe'},
 // {username: 'test', msg: 'ttttttttttrehaerhe'},
 ];
 app.post('/login', (req, res) => {
@@ -26,13 +22,11 @@ app.post('/login', (req, res) => {
 //   res.send({users,'chats':chatMsg})
 // })
 io.on('connection', socket => {
-
   socket.on('chat message', function(msg){
     chatMsg.push(msg);
     socket.broadcast.emit('chat message', msg);
   });
-  //(dynamic data)array in node(server), rest/socket together?just socket expensive? 
-  //check same user name,joined, left
+  //(dynamic data)array in node(server) 
   //https://stackoverflow.com/questions/41322878/dynamic-rooms-in-socket-io
   socket.on('add user', name => {
     socket.emit('prev',{users,'chats':chatMsg});

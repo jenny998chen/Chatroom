@@ -121,6 +121,12 @@ const Name = styled.div`
     : 'align-self: flex-start;'
   }
 `
+const Action = styled.div`
+  font-weight: 500;
+  opacity: 0.7;
+  text-align: center;
+  padding:0.2em;
+`
 const Bubble = styled.div`
   max-width: 85%;
   color: white;
@@ -176,12 +182,15 @@ function Home({ user }) {
     });
     socket.on('user joined', data => {
       console.log(data + ' joined');
-      // setChats(chats.concat({ joined: true, username: user}));
+      setChats(chats=>chats.concat({ action: 'joined', username: data}));
       setUsers(users => users.concat(data));
     });
     socket.on('user left', data => {
       console.log(data + ' left');
-      setUsers(users => users.filter(i => i !== data));
+      if(data){
+        setChats(chats=>chats.concat({ action: 'left', username: data}));
+        setUsers(users => users.filter(i => i !== data));
+      }
     });
   }, []);
   useEffect(() => {
@@ -202,10 +211,16 @@ function Home({ user }) {
         {users.map(u => <div key={u}>{u}</div>)}
       </Side>
       <Chat ref={chatRef}>
-        {chats.map(({ username, self, msg }, i) => (
+        {chats.map(({ username, self, msg, action }, i) => (
           <Fragment key={i}>
+            {action?
+            <Action>{username} {action}</Action>
+            :
+            <Fragment>
             <Name right={self}>{username}</Name>
             <Bubble right={self}>{msg}</Bubble>
+            </Fragment>
+            }
           </Fragment>
         ))}
       </Chat>
