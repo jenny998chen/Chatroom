@@ -1,4 +1,4 @@
-const fade = keyframes`
+const fade = styled.keyframes`
   from {
     opacity: 1;
   }

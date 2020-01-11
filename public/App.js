@@ -1,7 +1,7 @@
 const { Fragment, useState, useEffect, useRef } = React;
-const { createGlobalStyle, keyframes } = styled;
 let socket = io();
-const GlobalStyle = createGlobalStyle`
+
+const GlobalStyle = styled.createGlobalStyle`
   html,body,#root{
     height: 100%;
     margin: 0; 
@@ -89,10 +89,8 @@ const Layout = styled.div`
   grid-template-columns:280px 1fr;
   grid-template-rows:1fr auto;
   overflow: hidden;
-
   max-width:1100px;
   border-right:1px solid #C8C8C8;
-  // box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 `
 const Side = styled.aside`
   border-right:1px solid #C8C8C8;
@@ -140,7 +138,6 @@ const Bubble = styled.div`
   }
 `;
 const Input = styled.div`
-  // margin: 1rem 1rem 0.5em;
   border-radius: 0.3em;
   border: 1px solid grey;
   padding: 0.5em 1em;
@@ -156,7 +153,6 @@ const Footer = styled.div`
   margin:0.3em;
 `;
 const Button = styled.button`
-  // font-size: 18px;
   align-self:flex-end;
   border-radius: 0.3em;
   background-color: green;
@@ -270,4 +266,3 @@ function Home({ user }) {
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
-

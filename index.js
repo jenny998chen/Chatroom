@@ -4,12 +4,8 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3001;
 
-app.use(express.static('public'));
-// app.use(express.static(path.join(__dirname, './client/build')));                     
+app.use(express.static('public'));                    
 app.use(express.json())
-// app.use(bodyParser.urlencoded({
-//   extended: true
-// }));
 
 var users = [];
 var chatMsg=[
