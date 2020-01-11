@@ -26,8 +26,6 @@ io.on('connection', socket => {
     chatMsg.push(msg);
     socket.broadcast.emit('chat message', msg);
   });
-  //(dynamic data)array in node(server) 
-  //https://stackoverflow.com/questions/41322878/dynamic-rooms-in-socket-io
   socket.on('add user', name => {
     socket.emit('prev',{users,'chats':chatMsg});
     socket.username = name;
@@ -35,7 +33,6 @@ io.on('connection', socket => {
     socket.broadcast.emit('user joined', name);
   });
   socket.on('typing', data => {
-    console.log(data)
     socket.broadcast.emit('typing', {
       typing: data,
       username: socket.username
