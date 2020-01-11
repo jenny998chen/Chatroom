@@ -103,40 +103,6 @@ const Side = styled.aside`
     }
   }
 `
-const Chat = styled.div`
-  padding: 1em;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-`
-const Name = styled.div`
-  font-size: 0.85em;
-  padding:0 0.6em;
-  font-weight: 550;
-  opacity: 0.6;
-  ${props => props.right
-    ? 'align-self: flex-end;'
-    : 'align-self: flex-start;'
-  }
-`
-const Action = styled.div`
-  font-size: 0.9em;
-  font-weight: 500;
-  opacity: 0.7;
-  text-align: center;
-  padding:0.1em;
-`
-const Bubble = styled.div`
-  max-width: 85%;
-  color: white;
-  margin: 0.3em 0 0.8em;
-  padding: 0.6em 1em;
-  word-wrap:break-word;
-  ${props => props.right
-    ? 'align-self: flex-end;background-color: darkgrey;border-radius:0.6em 0.6em 0em 0.6em;'
-    : 'align-self: flex-start;background-color: #0084ff;border-radius:0.6em 0.6em 0.6em 0em;'
-  }
-`;
 const Input = styled.div`
   border-radius: 0.3em;
   border: 1px solid grey;
@@ -164,12 +130,11 @@ const Button = styled.button`
 `;
 
 function Home({ user }) {
-  let chatRef = useRef(null);
   let inputRef = useRef(null);
   const [users, setUsers] = useState([]);
   const [chats, setChats] = useState([]);
   const [typing, setTyping] = useState(false);
-  const [typingUsers, setTtypingUsers] = useState([]);
+  const [typingUsers, setTypingUsers] = useState([]);
   useEffect(() => {
     socket.on('chat message', msg => {
       setChats(chats => chats.concat(msg));
@@ -181,7 +146,7 @@ function Home({ user }) {
     });
     socket.on('typing', data => {
       console.log(data);
-      setTtypingUsers(typingUsers => (data.typing && data.username) ?
+      setTypingUsers(typingUsers => (data.typing && data.username) ?
         typingUsers.concat(data.username) : typingUsers.filter(i => i !== data.username));
     });
     socket.on('user joined', data => {
@@ -194,16 +159,10 @@ function Home({ user }) {
       if (data) {
         setChats(chats => chats.concat({ action: 'left', username: data }));
         setUsers(users => users.filter(i => i !== data));
-        setTtypingUsers(typingUsers.filter(i => i !== data))
+        setTypingUsers(typingUsers.filter(i => i !== data))
       }
     });
   }, []);
-  useEffect(() => {
-    if (chatRef.current) {
-      chatRef.current.scrollTo({ behavior: 'smooth', top: chatRef.current.scrollHeight });
-      // chatRef.current.scrollTop = chatRef.current.scrollHeight;
-    }
-  }, [chats]);
 
   useEffect(() => {
     socket.emit('typing', typing);
@@ -229,27 +188,7 @@ function Home({ user }) {
       <Side><div>Me: {user}</div>
         {users.map(u => <div key={u}>{u}</div>)}
       </Side>
-      <Chat ref={chatRef}>
-        {chats.map(({ username, self, msg, action }, i) => (
-          <Fragment key={i}>
-            {action ? <Action>{username} {action}</Action>
-              :
-              <Fragment>
-                <Name right={self}>{username}</Name>
-                <Bubble right={self}>{msg}</Bubble>
-              </Fragment>
-            }
-          </Fragment>
-        ))}
-        {
-          typingUsers.map((u, i) => (
-            <Fragment key={i}>
-              <Name right={false}>{u}</Name>
-              <Bubble right={false}><Thinking /></Bubble>
-            </Fragment>
-          ))
-        }
-      </Chat>
+      <Messages typingUsers={typingUsers} chats={chats} />
       <Footer>
         <Input
           ref={inputRef}
